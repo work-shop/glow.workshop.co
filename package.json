@@ -1,0 +1,45 @@
+{
+  "name": "glow-node",
+  "version": "0.0.0",
+  "description": "This package implements a node in a glow cube network. It runs on a Raspberry PI with 2.4g Wifi Connectivity and properly configured hardware, as specified in this package's README.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "scp -r . pi@raspberrypi.fios-router.home:~/glow"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/work-shop/glow-node.git"
+  },
+  "keywords": [
+    "physical",
+    "computing",
+    "distributed",
+    "computing",
+    "public",
+    "art",
+    "sensor",
+    "networks",
+    "raspberry",
+    "pi"
+  ],
+  "author": "nicschumann <nic@workshop.co>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/work-shop/glow-node/issues"
+  },
+  "homepage": "https://github.com/work-shop/glow-node#readme",
+  "dependencies": {
+    "argparse": "^1.0.9",
+    "collections": "^5.0.7",
+    "colors": "^1.1.2",
+    "express": "^4.16.2",
+    "ip": "^1.1.5",
+    "md5": "^2.2.1",
+    "netmask": "^1.0.6",
+    "randomstring": "^1.1.5",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "util-extend": "^1.0.3"
+  }
+}
