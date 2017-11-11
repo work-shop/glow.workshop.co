@@ -11,7 +11,7 @@ module.exports = function( server ) {
     return function() {
 
         server.state.candidates.forEach( function( ip ) {
-            if ( server.state.candidates.contains( ip ) ) {
+            if ( server.state.candidates.contains( ip ) && !server.state.acknowledgements.contains( ip ) ) {
 
                 server.state.candidates.remove( ip );
 

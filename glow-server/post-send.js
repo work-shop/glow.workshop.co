@@ -48,7 +48,7 @@ module.exports = function( server ) {
                     .catch( function( err ) {
                         server.log.write( 'error', 'server', `Error in update: ${err.message}`);
 
-                        if ( err.errno === 'ECONNREFUSED' || err.errno === 'ETIMEDOUT' ) {
+                        if ( err.error.errno === 'ECONNREFUSED' || err.error.errno === 'ETIMEDOUT' ) {
                             server.state.state.delete( key );
                             server.state.candidates.add( `${value.ip}:${value.port}` );
                         }
