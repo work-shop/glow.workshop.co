@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "scp -r . pi@raspberrypi.fios-router.home:~/glow"
+    "deploy": "git push pi-1 master",
+    "start-dry": "node index.js --debug --dry-run"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "ip": "^1.1.5",
     "md5": "^2.2.1",
     "netmask": "^1.0.6",
+    "onoff": "^1.1.8",
     "randomstring": "^1.1.5",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",

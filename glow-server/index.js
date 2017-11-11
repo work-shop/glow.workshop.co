@@ -4,9 +4,7 @@ var http = require('http');
 
 var express = require('express');
 
-var GlowNodeState = require('./glow-state');
-
-var handshakeRoutes = require('./glow-handshake');
+var GlowNodeState = require('../glow-state');
 
 var GlowNodeServer = function( config, log ) {
     if (!(this instanceof GlowNodeServer)) { return new GlowNodeServer( config, log); }
@@ -22,7 +20,15 @@ var GlowNodeServer = function( config, log ) {
 
     self.log = log;
 
-    self.scan = require('./glow-scan')( self );
+    self.scan = require('./post-scan.js')( self );
+
+    self.send = require('./post-send.js')( self );
+
+    self.sensor = new require('../glow-sensor')( self );
+
+    //self.light = new require('../glow-light')( self );
+
+    self.state = null;
 
 };
 
@@ -30,11 +36,25 @@ var GlowNodeServer = function( config, log ) {
 
 GlowNodeServer.prototype.initialize = function() {
 
+    /**
+     * Server Routes.
+     */
+
     this.app.use( require('body-parser').json() );
 
-    this.app.post( '/synchronize', handshakeRoutes.synchronize( this ) );
+    this.app.post( '/synchronize', require('./route-synchronize.js')( this ) );
 
-    this.app.post( '/confirm', handshakeRoutes.confirm( this ) );
+    this.app.post( '/confirm', require('./route-confirm.js')( this ) );
+
+    this.app.post( '/update', require('./route-update.js')( this ) );
+
+    /**
+     * Hardware interrupts
+     */
+
+    this.sensor.start();
+
+    //this.light.start();
 
     this.listen( this.scan );
 
@@ -77,15 +97,7 @@ GlowNodeServer.prototype.listen = function( next ) {
 
 };
 
-// GlowNodeServer.prototype.send = function() {
-//
-// };
-//
 // GlowNodeServer.prototype.recv = function() {
-//
-// };
-//
-// GlowNodeServer.prototype.glow = function() {
 //
 // };
 //

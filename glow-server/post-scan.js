@@ -2,10 +2,10 @@
 
 var rp = require('request-promise');
 
-var synchronizePayload = require('../glow-handshake/payload-synchronize.js');
-var acknowledgeValid = require('../glow-handshake/payload-acknowledge.js').valid;
-var confirmPayload = require('../glow-handshake/payload-confirm.js');
-var confirmedValid = require('../glow-handshake/payload-confirmed.js').valid;
+var synchronizePayload = require('./payload-synchronize.js');
+var acknowledgeValid = require('./payload-acknowledge.js').valid;
+var confirmPayload = require('./payload-confirm.js');
+var confirmedValid = require('./payload-confirmed.js').valid;
 
 module.exports = function( server ) {
     return function() {

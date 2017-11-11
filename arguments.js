@@ -33,6 +33,24 @@ parser.addArgument(
 );
 
 parser.addArgument(
+    ['-l', '--polling-interval'],
+    {
+        dest: 'pollingInterval',
+        help: 'Int (Optional). Specify the interval (in ms) at which to update the output interface. Defaults to 50.',
+        defaultValue: cfg.pollingInterval
+    }
+);
+
+parser.addArgument(
+    ['-t', '--threshold'],
+    {
+        dest: 'threshold',
+        help: 'Float (Optional). Specify the threshold value above which a sensor reading should be considered hot.',
+        defaultValue: cfg.threshold
+    }
+);
+
+parser.addArgument(
     ['-i', '--interface'],
     {
         dest: 'interface',
@@ -50,6 +68,18 @@ parser.addArgument(
         help: 'Specify this flag to start the node in local debug mode. Note that this is independent of the monitor command.',
         constant: true,
         defaultValue: cfg.debug
+    }
+);
+
+parser.addArgument(
+    ['-r', '--dry-run'],
+    {
+        nargs: 0,
+        action: 'storeConst',
+        dest: 'dryrun',
+        help: 'Specify this flag to ignore GPIO and feed random values instead of actual sensor data. Primarily for debugging.',
+        constant: true,
+        defaultValue: cfg.dryrun
     }
 );
 

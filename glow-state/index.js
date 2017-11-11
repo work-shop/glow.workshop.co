@@ -11,6 +11,7 @@ var GlowNodeState = function( config, log ) {
     if (!(this instanceof GlowNodeState)) { return new GlowNodeState( config, log ); }
     var self = this;
 
+    self.log = log;
 
     self.interface = getInterface( config, log );
 
@@ -25,6 +26,8 @@ var GlowNodeState = function( config, log ) {
     self.salt = config.salt;
 
     self.local_state = 0;
+
+    self.local_key = self.key.with( self.salt ).make();
 
     self.parameters = {
         sin: {
@@ -77,7 +80,7 @@ var GlowNodeState = function( config, log ) {
     });
 
     self.state.set(
-        self.key.with( self.salt ).make(),
+        self.local_key,
         {
             state: 0,
             parameters: self.parameters,
@@ -103,6 +106,35 @@ GlowNodeState.prototype.valid = function( salt, md5key ) {
 
     return false;
 };
+
+
+GlowNodeState.prototype.updateSelf = function( binaryState ) {
+    if ( this.local_state !== binaryState ) {
+
+        this.log.write('message', 'state ', `New state value read from sensor: ${binaryState}`);
+
+        this.local_state = binaryState;
+
+        var newState = {
+            state: binaryState,
+            parameters: this.parameters,
+            ip: this.ip,
+            port: this.port
+        };
+
+        // this.parameters = this.parameters;
+
+        this.state.set( this.local_key, newState );
+
+        return newState;
+
+    } else {
+
+        return false;
+
+    }
+};
+
 
 GlowNodeState.prototype.update = function( payload ) {
 

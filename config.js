@@ -24,6 +24,16 @@ module.exports = {
      */
     'port_max_retries': 10,
     /**
+     * Int. The interval in milliseconds at which to update the output hardware.
+     *
+     */
+    'pollingInterval': 50,
+    /**
+     * Float. The threshold value above which the sensor(s) should be considered hot.
+     *
+     */
+    'threshold': 0.5,
+    /**
      * Real. Specify an amplitude for the sine component of this node's pulse.
      */
     'sin_amplitude': Math.random(),
@@ -56,8 +66,12 @@ module.exports = {
     'interface': 'en0',
     /**
      * String. A random salt to identify this node.
-     *
-     * NOTE: This is a default salt, which can and should be overridden at the command line.
      */
-    'salt': randomstring.generate( 5 )
+    'salt': randomstring.generate( 5 ),
+    /**
+     * Bool. A flag specifying whether to use GPIO or fake it.
+     *
+     */
+    'dryrun': false
+
 };

@@ -1,15 +1,20 @@
 'use strict';
 
-var errorPayload = function( message, state ) {
+
+
+var acknowledgePayload = function( syn, state ) {
     return {
-        phase: 'ERR',
-        message: message,
+        phase: 'ACK',
+        state: state.local_state,
+        parameters: state.parameters,
+        key: state.key.with( syn.salt ).make(),
+        salt: state.salt,
         ip: state.ip,
         port: state.port
     };
 };
 
-errorPayload.valid = function( ack, state, ip ) {
+acknowledgePayload.valid = function( ack, state, ip ) {
 
     const phase_valid = (typeof ack.phase !== 'undefined') && ack.phase === 'ACK';
     const state_valid = (typeof ack.state !== 'undefined');
@@ -19,7 +24,11 @@ errorPayload.valid = function( ack, state, ip ) {
     const ip_valid = (typeof ack.ip !== 'undefined');
     const port_valid = (typeof ack.port !== 'undefined');
 
-    if ( !(phase_valid && state_valid && parameters_valid && salt_valid && ip_valid && port_valid) ) {
+    if ( !phase_valid && ack.phase === 'ERR' ) {
+
+        return [ false, ack.message ];
+
+    } else if ( !(phase_valid && state_valid && parameters_valid && salt_valid && ip_valid && port_valid) ) {
 
         return [ false, `The packet passed from ${ip} was not a well-formed 'acknowledge' packet.`];
 
@@ -35,4 +44,5 @@ errorPayload.valid = function( ack, state, ip ) {
 
 };
 
-module.exports = errorPayload;
+
+module.exports = acknowledgePayload;
