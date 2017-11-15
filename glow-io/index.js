@@ -34,6 +34,7 @@ GlowNodeIO.prototype.terminate = function() {
 };
 
 GlowNodeIO.prototype.writeHardwareState = function() {
+    this.log.write('message', 'sensor', 'Starting hardware write.' );
 
     var self = this;
 
@@ -55,6 +56,7 @@ GlowNodeIO.prototype.writeHardwareState = function() {
 };
 
 GlowNodeIO.prototype.pollHardwareState = function() {
+    this.log.write('message', 'sensor', 'Starting state polling.' );
 
     var self = this;
 
