@@ -64,7 +64,11 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
         self.intervals.push( setInterval( function() {
 
+
+
             var binaryState = (Math.random() >= self.threshold ) ? 1 : 0;
+
+            this.log.write('message', 'sensor', `${binaryState}` );
 
             self.server.send( binaryState );
 
