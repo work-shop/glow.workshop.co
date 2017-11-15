@@ -48,7 +48,7 @@ GlowNodeIO.prototype.writeHardwareState = function() {
             remote_binary_state = Math.round( remote_state.reduce( function( b,a ) { return b + a.state; }, 0) / remote_state.length );
         }
 
-        this.log.write('message', 'output', `Hardware write (local: ${local_binary_state}, remote: ${remote_binary_state})` );
+        self.log.write('message', 'output', `Hardware write (local: ${local_binary_state}, remote: ${remote_binary_state})` );
 
         self.rpio.write( LOCAL_STATE_INDICATOR_PIN, ( local_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
         self.rpio.write( REMOTE_STATE_INDICATOR_PIN, ( remote_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
@@ -65,8 +65,6 @@ GlowNodeIO.prototype.pollHardwareState = function() {
     if ( this.dryrun ) {
 
         self.intervals.push( setInterval( function() {
-
-
 
             var binaryState = (Math.random() >= self.threshold ) ? 1 : 0;
 
