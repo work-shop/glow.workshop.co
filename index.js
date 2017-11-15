@@ -1,10 +1,21 @@
 'use strict';
 
-const args = require('./arguments.js');
+let args = require('./arguments.js');
 
-var GlowLog = require('./glow-log');
-var GlowNodeServer = require('./glow-server');
+let GlowLog = require('./glow-log');
+let GlowNodeServer = require('./glow-server');
 
-var server = new GlowNodeServer( args, new GlowLog( args ) );
+let server = new GlowNodeServer( args, new GlowLog( args ) );
 
+/**
+ * Start the server and hardware interrupts.
+ */
 server.initialize();
+
+/**
+ * Catch a SIGINT signal, and gracefully shutdown the hardware and webserver.
+ */
+process.on('SIGINT', function() {
+    server.terminate();
+    process.exit( 1 );
+});

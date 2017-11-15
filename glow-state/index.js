@@ -84,6 +84,7 @@ var GlowNodeState = function( config, log ) {
         {
             state: 0,
             parameters: self.parameters,
+            key: self.local_key,
             ip: self.ip,
             port: self.port
         }
@@ -107,6 +108,15 @@ GlowNodeState.prototype.valid = function( salt, md5key ) {
     return false;
 };
 
+/**
+ * This routine reads the current state out of the HashMap.
+ */
+GlowNodeState.prototype.get = function() {
+
+    return this.state.toArray();
+
+};
+
 
 GlowNodeState.prototype.updateSelf = function( binaryState ) {
     if ( this.local_state !== binaryState ) {
@@ -118,6 +128,7 @@ GlowNodeState.prototype.updateSelf = function( binaryState ) {
         var newState = {
             state: binaryState,
             parameters: this.parameters,
+            key: this.local_key,
             ip: this.ip,
             port: this.port
         };
@@ -143,6 +154,7 @@ GlowNodeState.prototype.update = function( payload ) {
         {
             state: payload.state,
             parameters: payload.parameters,
+            key: payload.key,
             ip: payload.ip,
             port: payload.port
         }
@@ -158,6 +170,10 @@ GlowNodeState.prototype.purge = function( ip, port ) {
     });
 
     return this;
+};
+
+GlowNodeState.prototype.terminate = function() {
+    this.log.write('message', 'state ', `Received polite quit request...`);
 };
 
 module.exports = GlowNodeState;

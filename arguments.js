@@ -137,4 +137,8 @@ parser.addArgument(
     }
 );
 
-module.exports = extend(cfg, parser.parseArgs());
+let configuration = extend(cfg, parser.parseArgs());
+
+configuration.rpio = require('rpio');
+
+module.exports = configuration;

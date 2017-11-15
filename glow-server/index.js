@@ -18,28 +18,45 @@ var GlowNodeServer = function( config, log ) {
 
     self.app = express();
 
+    self.instance = null;
+
     self.log = log;
 
     self.scan = require('./post-scan.js')( self );
 
     self.send = require('./post-send.js')( self );
 
-    self.sensor = new require('../glow-sensor')( self );
-
-    //self.light = new require('../glow-light')( self );
+    self.io = new require('../glow-io')( self );
 
     self.state = null;
 
 };
 
-
+/**
+ * This should be called whenever the process is killed.
+ */
+GlowNodeServer.prototype.terminate = function() {
+    this.log.write('message', 'server', 'Received polite termination request... ' );
+    this.io.terminate();
+    this.state.terminate();
+    this.instance.close();
+};
 
 GlowNodeServer.prototype.initialize = function() {
+    /**
+     * Initialize RPIO in the appropriate mode, based on whether we're
+     * developing locally, or deployed on the PI.
+     */
+
+    this.config.rpio.init({
+        'gpiomem': true,
+        'mapping': 'physical',
+        'mock': ( this.config.dryrun ) ? 'raspi-zero-w' : false
+    });
 
     /**
      * Server Routes.
      */
-
     this.app.use( require('body-parser').json() );
 
     this.app.post( '/synchronize', require('./route-synchronize.js')( this ) );
@@ -51,10 +68,7 @@ GlowNodeServer.prototype.initialize = function() {
     /**
      * Hardware interrupts
      */
-
-    this.sensor.start();
-
-    //this.light.start();
+    this.io.start();
 
     this.listen( this.scan );
 
@@ -66,9 +80,9 @@ GlowNodeServer.prototype.listen = function( next ) {
 
     var i = 0;
     var self = this;
-    var server = http.createServer( this.app );
+    self.instance = http.createServer( this.app );
 
-    server.on('error', function( e ) {
+    self.instance.on('error', function( e ) {
         if ( e.errno === 'EADDRINUSE' && i < self.port_max_retries ) {
 
             self.log.write('warning', 'server', e.message );
@@ -77,7 +91,7 @@ GlowNodeServer.prototype.listen = function( next ) {
             self.config.port += 1;
             i += 1;
 
-            server.listen( self.port);
+            self.instance.listen( self.port);
 
         } else {
             self.log.write('error', 'server', `Failed to find accessible port: ${e.message}` );

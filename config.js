@@ -72,6 +72,6 @@ module.exports = {
      * Bool. A flag specifying whether to use GPIO or fake it.
      *
      */
-    'dryrun': false
+    'dryrun': false,
 
 };
