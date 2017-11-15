@@ -2,6 +2,7 @@
 
 const LOCAL_STATE_INDICATOR_PIN = 16;
 const REMOTE_STATE_INDICATOR_PIN = 18;
+const LOCAL_FSR_READ_PIN = 22;
 
 
 var GlowNodeIO = function( server ) {
@@ -80,13 +81,12 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
         self.log.write('warning', 'sensor', 'Live polling from the sensor is not currently implemented, using dry-run.' );
 
-        self.intervals.push( setInterval( function() {
+        self.rpio.poll( LOCAL_FSR_READ_PIN, function( ) {
 
-            var binaryState = (Math.random() >= self.threshold ) ? 1 : 0;
+            self.log.write('message', 'sensor', `State change detected on ${LOCAL_FSR_READ_PIN}` );
+            self.server.send( ( self.rpio.read( LOCAL_FSR_READ_PIN ) ? 1 : 0 ) );
 
-            self.server.send( binaryState );
-
-        }, self.readPollingInterval ) );
+        });
 
     }
 
@@ -96,6 +96,7 @@ GlowNodeIO.prototype.start = function() {
 
     this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
     this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
+    this.rpio.open( LOCAL_FSR_READ_PIN, this.rpio.INPUT, this.rpio.PULL_DOWN );
 
     this.log.write('warning', 'sensor', 'Testing LED Output' );
     this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.HIGH );
