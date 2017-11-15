@@ -1,7 +1,7 @@
 'use strict';
 
-const LOCAL_STATE_INDICATOR_PIN = 12;
-const REMOTE_STATE_INDICATOR_PIN = 16;
+const LOCAL_STATE_INDICATOR_PIN = 16;
+const REMOTE_STATE_INDICATOR_PIN = 18;
 
 
 var GlowNodeIO = function( server ) {
@@ -70,7 +70,7 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
             var binaryState = (Math.random() >= self.threshold ) ? 1 : 0;
 
-            this.log.write('message', 'sensor', `${binaryState}` );
+            self.log.write('message', 'sensor', `${binaryState}` );
 
             self.server.send( binaryState );
 
@@ -78,7 +78,7 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
     } else {
 
-        this.log.write('warning', 'sensor', 'Live polling from the sensor is not currently implemented, using dry-run.' );
+        self.log.write('warning', 'sensor', 'Live polling from the sensor is not currently implemented, using dry-run.' );
 
         self.intervals.push( setInterval( function() {
 
