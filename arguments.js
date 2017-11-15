@@ -33,11 +33,20 @@ parser.addArgument(
 );
 
 parser.addArgument(
-    ['-l', '--polling-interval'],
+    ['-w', '--write-polling-interval'],
     {
         dest: 'pollingInterval',
         help: 'Int (Optional). Specify the interval (in ms) at which to update the output interface. Defaults to 50.',
-        defaultValue: cfg.pollingInterval
+        defaultValue: cfg.writePollingInterval
+    }
+);
+
+parser.addArgument(
+    ['-r', '--read-polling-interval'],
+    {
+        dest: 'pollingInterval',
+        help: 'Int (Optional). Specify the interval (in ms) at which to read the input interface. Defaults to 50.',
+        defaultValue: cfg.readPollingInterval
     }
 );
 
@@ -60,7 +69,7 @@ parser.addArgument(
 );
 
 parser.addArgument(
-    ['-d', '--debug'],
+    ['--debug'],
     {
         nargs: 0,
         action: 'storeConst',
@@ -72,7 +81,7 @@ parser.addArgument(
 );
 
 parser.addArgument(
-    ['-r', '--dry-run'],
+    ['--dry-run'],
     {
         nargs: 0,
         action: 'storeConst',

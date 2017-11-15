@@ -27,7 +27,12 @@ module.exports = {
      * Int. The interval in milliseconds at which to update the output hardware.
      *
      */
-    'pollingInterval': 50,
+    'writePollingInterval': 50,
+    /**
+     * Int. The interval in milliseconds at which to update the output hardware.
+     *
+     */
+    'readPollingInterval': 50,
     /**
      * Float. The threshold value above which the sensor(s) should be considered hot.
      *

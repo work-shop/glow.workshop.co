@@ -12,7 +12,9 @@ var GlowNodeIO = function( server ) {
 
     self.threshold = server.config.threshold;
 
-    self.pollingInterval = server.config.pollingInterval;
+    self.writePollingInterval = server.config.writePollingInterval;
+
+    self.readPollingInterval = server.config.readPollingInterval;
 
     self.dryrun = server.config.dryrun;
 
@@ -34,7 +36,7 @@ GlowNodeIO.prototype.terminate = function() {
 };
 
 GlowNodeIO.prototype.writeHardwareState = function() {
-    this.log.write('message', 'sensor', 'Starting hardware write.' );
+    this.log.write('message', 'sensor', `Starting hardware write on ${self.writePollingInterval}ms interval.` );
 
     var self = this;
 
@@ -48,12 +50,10 @@ GlowNodeIO.prototype.writeHardwareState = function() {
             remote_binary_state = Math.round( remote_state.reduce( function( b,a ) { return b + a.state; }, 0) / remote_state.length );
         }
 
-        self.log.write('message', 'output', `Hardware write (local: ${local_binary_state}, remote: ${remote_binary_state})` );
-
         self.rpio.write( LOCAL_STATE_INDICATOR_PIN, ( local_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
         self.rpio.write( REMOTE_STATE_INDICATOR_PIN, ( remote_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
 
-    }, self.pollingInterval ));
+    }, self.writePollingInterval ));
 
 };
 
@@ -72,7 +72,7 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
             self.server.send( binaryState );
 
-        }, self.pollingInterval ) );
+        }, self.readPollingInterval ) );
 
     } else {
 
@@ -84,7 +84,7 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
             self.server.send( binaryState );
 
-        }, self.pollingInterval ) );
+        }, self.readPollingInterval ) );
 
     }
 
