@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git push pi-1 master",
-    "start-dry": "node index.js --debug --dry-run"
+    "deploy": "git push pi-0 master",
+    "start-dry": "node index.js --debug --dry-run",
+    "start-on-pi": "node index.js --debug --polling-interval=1000 --interface=wlan0"
   },
   "repository": {
     "type": "git",
