@@ -94,10 +94,18 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
 GlowNodeIO.prototype.start = function() {
 
-    this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT );
-    this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT );
+    this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
+    this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
+
+    this.log.write('warning', 'sensor', 'Testing LED Output' );
+    this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.HIGH );
+    this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.HIGH );
+    this.rpio.msleep( 250 );
+    this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.LOW );
+    this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.LOW );
 
     this.pollHardwareState();
+
     this.writeHardwareState();
 
 };
