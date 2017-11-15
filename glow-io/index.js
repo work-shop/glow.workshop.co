@@ -81,12 +81,12 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
         self.log.write('warning', 'sensor', 'Live polling from the sensor is not currently implemented, using dry-run.' );
 
-        self.rpio.poll( LOCAL_FSR_READ_PIN, function( ) {
+        self.intervals.push( setInterval( function() {
 
             self.log.write('message', 'sensor', `State change detected on ${LOCAL_FSR_READ_PIN}` );
             self.server.send( ( self.rpio.read( LOCAL_FSR_READ_PIN ) ? 1 : 0 ) );
 
-        });
+        }, self.readPollingInterval ) );
 
     }
 
