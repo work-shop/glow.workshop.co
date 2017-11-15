@@ -35,7 +35,7 @@ parser.addArgument(
 parser.addArgument(
     ['-w', '--write-polling-interval'],
     {
-        dest: 'pollingInterval',
+        dest: 'writePollingInterval',
         help: 'Int (Optional). Specify the interval (in ms) at which to update the output interface. Defaults to 50.',
         defaultValue: cfg.writePollingInterval
     }
@@ -44,7 +44,7 @@ parser.addArgument(
 parser.addArgument(
     ['-r', '--read-polling-interval'],
     {
-        dest: 'pollingInterval',
+        dest: 'readPollingInterval',
         help: 'Int (Optional). Specify the interval (in ms) at which to read the input interface. Defaults to 50.',
         defaultValue: cfg.readPollingInterval
     }

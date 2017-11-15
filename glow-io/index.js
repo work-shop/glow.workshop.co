@@ -36,9 +36,10 @@ GlowNodeIO.prototype.terminate = function() {
 };
 
 GlowNodeIO.prototype.writeHardwareState = function() {
-    this.log.write('message', 'sensor', `Starting hardware write on ${self.writePollingInterval}ms interval.` );
 
     var self = this;
+
+    this.log.write('message', 'sensor', `Starting hardware write on ${ self.writePollingInterval }ms interval.` );
 
     self.intervals.push( setInterval( function() {
 
@@ -58,9 +59,10 @@ GlowNodeIO.prototype.writeHardwareState = function() {
 };
 
 GlowNodeIO.prototype.pollHardwareState = function() {
-    this.log.write('message', 'sensor', 'Starting state polling.' );
 
     var self = this;
+
+    this.log.write('message', 'sensor', `Starting hardware write on ${ self.readPollingInterval }ms interval.` );
 
     if ( this.dryrun ) {
 
