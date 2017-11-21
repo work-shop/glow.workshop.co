@@ -4,6 +4,16 @@ const LOCAL_STATE_INDICATOR_PIN = 16;
 const REMOTE_STATE_INDICATOR_PIN = 18;
 const LOCAL_FSR_READ_PIN = 22;
 
+const STATE_PWM_PIN = 12;
+
+const PWM_CLOCK_INTERVAL_DIVIDER = 8;
+const PWM_RANGE = 1024;
+const PWM_MAX_INTERVAL = 128;
+
+
+function makePWMPulse( local, remote ) {
+    return Math.round( (local * PWM_MAX_INTERVAL / 2) + (remote * PWM_MAX_INTERVAL / 2) );
+}
 
 var GlowNodeIO = function( server ) {
     if (!(this instanceof GlowNodeIO)) { return new GlowNodeIO( server ); }
@@ -52,10 +62,20 @@ GlowNodeIO.prototype.writeHardwareState = function() {
             remote_binary_state = Math.round( remote_state.reduce( function( b,a ) { return b + a.state; }, 0) / remote_state.length );
         }
 
-        self.rpio.write( LOCAL_STATE_INDICATOR_PIN, ( local_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
-        self.rpio.write( REMOTE_STATE_INDICATOR_PIN, ( remote_binary_state === 1 ) ? self.rpio.HIGH : self.rpio.LOW );
+        self.log.write('message', 'sensor', `Writing Hardware PWM at ${ makePWMPulse( local_binary_state, remote_binary_state ) }` );
+
+        self.rpio.pwmSetData( STATE_PWM_PIN, makePWMPulse( local_binary_state, remote_binary_state ) );
 
     }, self.writePollingInterval ));
+
+};
+
+GlowNodeIO.prototype.setHardwarePWM = function() {
+
+    var self = this;
+
+    this.log.write('message', 'sensor', `Starting hardware PWM on ${ self.writePollingInterval }.` );
+
 
 };
 
@@ -92,18 +112,37 @@ GlowNodeIO.prototype.pollHardwareState = function() {
 
 };
 
+GlowNodeIO.prototype.testCycle = function( steps ) {
+
+    var self = this;
+
+    steps.forEach( function( div ) {
+        self.rpio.pwmSetData( STATE_PWM_PIN, PWM_MAX_INTERVAL / div );
+        self.rpio.msleep( 100 );
+    });
+
+    return this;
+
+};
+
 GlowNodeIO.prototype.start = function() {
 
-    this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
-    this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
+    // this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
+    // this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
     this.rpio.open( LOCAL_FSR_READ_PIN, this.rpio.INPUT, this.rpio.PULL_DOWN );
 
-    this.log.write('warning', 'sensor', 'Testing LED Output' );
-    this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.HIGH );
-    this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.HIGH );
-    this.rpio.msleep( 250 );
-    this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.LOW );
-    this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.LOW );
+    this.rpio.open( STATE_PWM_PIN, this.rpio.PWM );
+    this.rpio.pwmSetClockDivider( PWM_CLOCK_INTERVAL_DIVIDER );
+    this.rpio.pwmSetRange( STATE_PWM_PIN, PWM_RANGE );
+
+    this.testCycle( [ 4, 2, 1, 2, 4 ] );
+
+    // this.log.write('warning', 'sensor', 'Testing LED Output' );
+    // this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.HIGH );
+    // this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.HIGH );
+    // this.rpio.msleep( 250 );
+    // this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.LOW );
+    // this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.LOW );
 
     this.pollHardwareState();
 

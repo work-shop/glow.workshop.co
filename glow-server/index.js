@@ -49,7 +49,7 @@ GlowNodeServer.prototype.initialize = function() {
      */
 
     this.config.rpio.init({
-        'gpiomem': true,
+        'gpiomem': false,
         'mapping': 'physical',
         'mock': ( this.config.dryrun ) ? 'raspi-zero-w' : false
     });
