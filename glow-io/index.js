@@ -33,7 +33,7 @@ var GlowNodeIO = function( server ) {
 
     self.time = 0;
 
-    self.timestep = (2 * Math.PI) / self.writePollingInterval;
+    self.timestep = (self.writePollingInterval * Math.PI) / 1000;
 
 };
 

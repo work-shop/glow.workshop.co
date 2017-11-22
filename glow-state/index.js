@@ -184,9 +184,9 @@ GlowNodeState.prototype.purge = function( ip, port ) {
  */
 GlowNodeState.prototype.getOscillators = function( t ) {
     return {
-        r: parseInt( Math.floor( this.map( Math.cos( t  * (this.local_state * 4) ) ) ) ),
-        g: parseInt( Math.floor( this.map( Math.cos( t  * (this.local_state * 4) ) ) ) ),
-        b: parseInt( Math.floor( this.map( Math.cos( t  * (this.local_state * 4) ) ) ) ),
+        r: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
+        g: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
+        b: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
     };
 };
 
