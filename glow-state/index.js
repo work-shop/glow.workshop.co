@@ -14,7 +14,7 @@ var GlowNodeState = function( config, log ) {
 
     self.log = log;
 
-    self.map = linearmap( -1, 1 )( 0, config.hardware.PWM.MAX_INTERVAL );
+    self.map = map( -1, 1 )( 0, config.hardware.PWM.MAX_INTERVAL );
 
     self.interface = getInterface( config, log );
 
@@ -184,7 +184,7 @@ GlowNodeState.prototype.purge = function( ip, port ) {
  */
 GlowNodeState.prototype.getOscillators = function( t ) {
     return {
-        r: this.map( Math.sin( t ) ),
+        r: Math.floor( this.map( Math.sin( t ) ) ),
         g: 0,
         b: 0,
     };
