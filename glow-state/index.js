@@ -6,12 +6,15 @@ var SortedMap = require('collections/sorted-map');
 
 var GlowNodeKey = require('../glow-key');
 var getInterface = require('./interface.js');
+var map = require('./linear-map.js');
 
 var GlowNodeState = function( config, log ) {
     if (!(this instanceof GlowNodeState)) { return new GlowNodeState( config, log ); }
     var self = this;
 
     self.log = log;
+
+    self.map = linearmap( -1, 1 )( 0, config.hardware.PWM.MAX_INTERVAL );
 
     self.interface = getInterface( config, log );
 
@@ -181,13 +184,11 @@ GlowNodeState.prototype.purge = function( ip, port ) {
  */
 GlowNodeState.prototype.getOscillators = function( t ) {
     return {
-        r: (this.local_state * 64) + 32,
-        g: 32,
-        b: 64
+        r: this.map( Math.sin( t ) ),
+        g: 0,
+        b: 0,
     };
 };
-
-
 
 GlowNodeState.prototype.terminate = function() {
     this.log.write('message', 'state ', `Received polite quit request...`);

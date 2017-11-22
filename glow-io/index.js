@@ -31,6 +31,10 @@ var GlowNodeIO = function( server ) {
 
     self.b_pin = server.config.hardware.PWM.B_PIN;
 
+    self.time = 0;
+
+    self.timestep = (2 * Math.PI) / self.writePollingInterval;
+
 };
 
 
@@ -42,11 +46,15 @@ GlowNodeIO.prototype.writeHardwareState = function() {
 
     self.intervals.push( setInterval( function() {
 
-        let oscillators = self.server.state.getOscillators();
+        let oscillators = self.server.state.getOscillators( self.time );
+
+        console.log( oscillators );
 
         self.rpio.pwmSetData( self.r_pin, oscillators.r );
         self.rpio.pwmSetData( self.g_pin, oscillators.g );
         self.rpio.pwmSetData( self.b_pin, oscillators.b );
+
+        self.time += self.timestep;
 
     }, self.writePollingInterval ));
 
@@ -100,7 +108,7 @@ GlowNodeIO.prototype.testCycle = function( steps ) {
         self.rpio.pwmSetData( self.r_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
         self.rpio.pwmSetData( self.g_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
         self.rpio.pwmSetData( self.b_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
-        self.rpio.msleep( 500 );
+        self.rpio.msleep( 100 );
     });
 
     self.rpio.pwmSetData( self.r_pin, 0 );
@@ -129,6 +137,7 @@ GlowNodeIO.prototype.start = function() {
 
     this.serial = new SerialPort( self.config.serialPort, { baudRate: self.config.baudRate }, function( err ) {
         if ( err ) {
+
             self.log.write('error', 'io:serial', err.message );
 
         } else {
