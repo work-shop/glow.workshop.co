@@ -48,9 +48,9 @@ GlowNodeIO.prototype.writeHardwareState = function() {
 
         let oscillators = self.server.state.getOscillators( self.time );
 
-        self.rpio.pwmSetData( self.r_pin, oscillators.r );
-        self.rpio.pwmSetData( self.g_pin, oscillators.g );
-        self.rpio.pwmSetData( self.b_pin, oscillators.b );
+        self.rpio.pwmSetData( self.r_pin, parseInt( oscillators.r ) );
+        self.rpio.pwmSetData( self.g_pin, parseInt( oscillators.g ) );
+        self.rpio.pwmSetData( self.b_pin, parseInt( oscillators.b ) );
 
         self.time += self.timestep;
 
