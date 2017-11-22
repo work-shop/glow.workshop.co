@@ -176,9 +176,10 @@ GlowNodeState.prototype.purge = function( ip, port ) {
  * This routine maps the current state of the network into a set of
  * Three RGB oscillator values, which are implemented as hardware PWM intervals.
  *
+ * @param t the current uptime of the system. This is used to produce the oscillation.
  * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
  */
-GlowNodeState.prototype.getOscillators = function() {
+GlowNodeState.prototype.getOscillators = function( t ) {
     return {
         r: (this.local_state * 64) + 32,
         g: 32,

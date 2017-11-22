@@ -60,11 +60,20 @@ parser.addArgument(
 );
 
 parser.addArgument(
-    ['-i', '--interface'],
+    ['--interface'],
     {
         dest: 'interface',
         help: 'String (Optional). Network gateway to attempt to use to connect to the network.',
         defaultValue: cfg.interface
+    }
+);
+
+parser.addArgument(
+    ['--serial-port'],
+    {
+        dest: 'serialPort',
+        help: 'String (Optional). Serial Port to open for connection with Arduino.',
+        defaultValue: cfg.serialPort
     }
 );
 

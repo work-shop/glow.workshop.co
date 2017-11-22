@@ -103,6 +103,10 @@ GlowNodeIO.prototype.testCycle = function( steps ) {
         self.rpio.msleep( 500 );
     });
 
+    self.rpio.pwmSetData( self.r_pin, 0 );
+    self.rpio.pwmSetData( self.g_pin, 0 );
+    self.rpio.pwmSetData( self.b_pin, 0 );
+
     return this;
 
 };
@@ -124,17 +128,18 @@ GlowNodeIO.prototype.start = function() {
     this.testCycle( [ 4, 2, 1, 2, 4 ] );
 
     this.serial = new SerialPort( self.config.serialPort, { baudRate: self.config.baudRate }, function( err ) {
-        if ( err ) { self.log.write('error', 'io:serial', err.message ); }
-        self.log.write('message', 'io:serial', `Opened Serial Port on ${self.config.serialPort} at ${self.config.baudRate} baud.`);
+        if ( err ) {
+            self.log.write('error', 'io:serial', err.message );
 
-        self.pollHardwareState();
-        self.writeHardwareState();
+        } else {
+
+            self.log.write('message', 'io:serial', `Opened Serial Port on ${self.config.serialPort} at ${self.config.baudRate} baud.`);
+            self.pollHardwareState();
+            self.writeHardwareState();
+
+        }
 
     });
-
-
-
-
 
 };
 
