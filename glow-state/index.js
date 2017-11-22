@@ -121,7 +121,7 @@ GlowNodeState.prototype.get = function() {
 GlowNodeState.prototype.updateSelf = function( binaryState ) {
     if ( this.local_state !== binaryState ) {
 
-        this.log.write('message', 'state ', `New state value read from sensor: ${binaryState}`);
+        this.log.write('message', 'state ', `New state value read from io:serial ${binaryState}`);
 
         this.local_state = binaryState;
 
@@ -171,6 +171,22 @@ GlowNodeState.prototype.purge = function( ip, port ) {
 
     return this;
 };
+
+/**
+ * This routine maps the current state of the network into a set of
+ * Three RGB oscillator values, which are implemented as hardware PWM intervals.
+ *
+ * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
+ */
+GlowNodeState.prototype.getOscillators = function() {
+    return {
+        r: (this.local_state * 64) + 32,
+        g: 32,
+        b: 64
+    };
+};
+
+
 
 GlowNodeState.prototype.terminate = function() {
     this.log.write('message', 'state ', `Received polite quit request...`);

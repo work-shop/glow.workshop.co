@@ -34,10 +34,9 @@ module.exports = {
      */
     'readPollingInterval': 50,
     /**
-     * Float. The threshold value above which the sensor(s) should be considered hot.
-     *
+     * Int in the range [0, 1024]. The threshold value above which the sensor(s) should be considered hot.
      */
-    'threshold': 0.5,
+    'threshold': 415,
     /**
      * Real. Specify an amplitude for the sine component of this node's pulse.
      */
@@ -78,5 +77,49 @@ module.exports = {
      *
      */
     'dryrun': false,
+    /**
+     * String. Name of the TTY port to connect with.
+     */
+    'serialPort': '/dev/tty.usbmodem1421',
+    /**
+     * One of 110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200.
+     * Sets the baud rate to initialize the serial connection at. MUST match the rate sets
+     * on the FSR control Arduino.
+     */
+    'baudRate': 9600,
+    /**
+     * Object. Configuration Constants for Hardware.
+     */
+    'hardware': {
+        'PWM': {
+            /**
+             * Power of 2. Internal divider that sets how frequently the PWM clock is checked.
+             */
+            'CLOCK_INTERVAL_DIVIDER': 8,
+            /**
+             * Power of 2. Maximum PWM pulse range.
+             */
+            'RANGE': 1024,
+            /**
+             * Power of 2. Maximum PWM usable pulse.
+             */
+            'MAX_INTERVAL': 128,
+            /**
+             * [1,40]. Physical pin header location for the R_Pin on the raspberry PI.
+             * This pin controls the PWM for the red leds on the MOSFET driver
+             */
+            'R_PIN': 35,
+            /**
+             * [1,40]. Physical pin header location for the G_Pin on the raspberry PI.
+             * This pin controls the PWM for the green leds on the MOSFET driver
+             */
+            'G_PIN': 33,
+            /**
+             * [1,40]. Physical pin header location for the B_Pin on the raspberry PI.
+             * This pin controls the PWM for the blue leds on the MOSFET driver
+             */
+            'B_PIN': 32
+        }
+    }
 
 };

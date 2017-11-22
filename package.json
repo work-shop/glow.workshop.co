@@ -44,6 +44,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "rpio": "^0.9.19",
+    "serialport": "^6.0.4",
     "util-extend": "^1.0.3"
   }
 }

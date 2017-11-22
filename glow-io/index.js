@@ -1,25 +1,15 @@
 'use strict';
 
-const LOCAL_STATE_INDICATOR_PIN = 16;
-const REMOTE_STATE_INDICATOR_PIN = 18;
-const LOCAL_FSR_READ_PIN = 22;
+var SerialPort = require('serialport');
 
-const STATE_PWM_PIN = 12;
-
-const PWM_CLOCK_INTERVAL_DIVIDER = 8;
-const PWM_RANGE = 1024;
-const PWM_MAX_INTERVAL = 128;
-
-
-function makePWMPulse( local, remote ) {
-    return Math.round( (local * PWM_MAX_INTERVAL / 2) + (remote * PWM_MAX_INTERVAL / 2) );
-}
 
 var GlowNodeIO = function( server ) {
     if (!(this instanceof GlowNodeIO)) { return new GlowNodeIO( server ); }
     var self = this;
 
     self.log = server.log;
+
+    self.config = server.config;
 
     self.threshold = server.config.threshold;
 
@@ -35,90 +25,82 @@ var GlowNodeIO = function( server ) {
 
     self.intervals = [];
 
+    self.r_pin = server.config.hardware.PWM.R_PIN;
+
+    self.g_pin = server.config.hardware.PWM.G_PIN;
+
+    self.b_pin = server.config.hardware.PWM.B_PIN;
+
 };
 
-GlowNodeIO.prototype.terminate = function() {
-    this.log.write('message', 'sensor', 'Received polite quit request...' );
-    this.intervals.forEach( function( interval ) { clearInterval( interval ); });
-    this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.LOW );
-    this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.LOW );
-    this.rpio.close( LOCAL_STATE_INDICATOR_PIN, this.rpio.PIN_RESET );
-    this.rpio.close( REMOTE_STATE_INDICATOR_PIN, this.rpio.PIN_RESET );
-};
 
 GlowNodeIO.prototype.writeHardwareState = function() {
 
     var self = this;
 
-    this.log.write('message', 'sensor', `Starting hardware write on ${ self.writePollingInterval }ms interval.` );
+    this.log.write('message', 'io:pwm', `Starting hardware write on a ${ self.writePollingInterval }ms interval.` );
 
     self.intervals.push( setInterval( function() {
 
-        var local_binary_state = self.server.state.local_state;
-        var remote_state = self.server.state.get().filter( function( s ) { return s.key !== self.server.state.local_key; });
-        var remote_binary_state = 0;
+        let oscillators = self.server.state.getOscillators();
 
-        if ( remote_state.length > 0 ) {
-            remote_binary_state = Math.round( remote_state.reduce( function( b,a ) { return b + a.state; }, 0) / remote_state.length );
-        }
-
-        self.log.write('message', 'sensor', `Writing Hardware PWM at ${ makePWMPulse( local_binary_state, remote_binary_state ) }` );
-
-        self.rpio.pwmSetData( STATE_PWM_PIN, makePWMPulse( local_binary_state, remote_binary_state ) );
+        self.rpio.pwmSetData( self.r_pin, oscillators.r );
+        self.rpio.pwmSetData( self.g_pin, oscillators.g );
+        self.rpio.pwmSetData( self.b_pin, oscillators.b );
 
     }, self.writePollingInterval ));
 
 };
 
-GlowNodeIO.prototype.setHardwarePWM = function() {
-
-    var self = this;
-
-    this.log.write('message', 'sensor', `Starting hardware PWM on ${ self.writePollingInterval }.` );
 
 
-};
-
+/**
+ * This routine instantiates interruptable polling on the specified serial port.
+ * It reassembles serial packets received from the Arduino, and sends state updates
+ * to the internal state of the node.
+ */
 GlowNodeIO.prototype.pollHardwareState = function() {
 
     var self = this;
+    let packet = '';
 
-    this.log.write('message', 'sensor', `Starting hardware write on ${ self.readPollingInterval }ms interval.` );
+    this.log.write('message', 'io:serial', `Starting hardware read on ${ self.config.serialPort } (${ self.config.baudRate} baud).` );
 
-    if ( this.dryrun ) {
+    self.serial.on('readable', function() {
 
-        self.intervals.push( setInterval( function() {
+        /** Our packets are being sent from the Arduino in newline-delimited chunks.
+         * If the last bit read from the serial port is '\n', then we've received a complete packet,
+         * if not, then we're in the middle of a packet, and should concatenate.
+         */
+        if ( packet[ packet.length  - 1 ] !== '\n' ) {
 
-            var binaryState = (Math.random() >= self.threshold ) ? 1 : 0;
+            packet += self.serial.read();
 
-            self.log.write('message', 'sensor', `${binaryState}` );
+        } else {
 
-            self.server.send( binaryState );
+            self.server.state.updateSelf( ( parseInt( packet.substring( 0, packet.length - 1 ) ) > self.config.threshold ) ? 1 : 0 );
 
-        }, self.readPollingInterval ) );
+            packet = self.serial.read();
 
-    } else {
+        }
 
-        self.log.write('warning', 'sensor', 'Live polling from the sensor is not currently implemented, using dry-run.' );
+    });
 
-        self.rpio.poll( LOCAL_FSR_READ_PIN, function( ) {
-
-            self.log.write('message', 'sensor', `State change detected on ${LOCAL_FSR_READ_PIN}` );
-            self.server.send( ( self.rpio.read( LOCAL_FSR_READ_PIN ) ? 1 : 0 ) );
-
-        });
-
-    }
+    return this;
 
 };
+
+
 
 GlowNodeIO.prototype.testCycle = function( steps ) {
 
     var self = this;
 
     steps.forEach( function( div ) {
-        self.rpio.pwmSetData( STATE_PWM_PIN, PWM_MAX_INTERVAL / div );
-        self.rpio.msleep( 100 );
+        self.rpio.pwmSetData( self.r_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
+        self.rpio.pwmSetData( self.g_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
+        self.rpio.pwmSetData( self.b_pin, self.config.hardware.PWM.MAX_INTERVAL / div );
+        self.rpio.msleep( 500 );
     });
 
     return this;
@@ -127,26 +109,49 @@ GlowNodeIO.prototype.testCycle = function( steps ) {
 
 GlowNodeIO.prototype.start = function() {
 
-    // this.rpio.open( LOCAL_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
-    // this.rpio.open( REMOTE_STATE_INDICATOR_PIN, this.rpio.OUTPUT, this.rpio.HIGH );
-    this.rpio.open( LOCAL_FSR_READ_PIN, this.rpio.INPUT, this.rpio.PULL_DOWN );
+    var self = this;
 
-    this.rpio.open( STATE_PWM_PIN, this.rpio.PWM );
-    this.rpio.pwmSetClockDivider( PWM_CLOCK_INTERVAL_DIVIDER );
-    this.rpio.pwmSetRange( STATE_PWM_PIN, PWM_RANGE );
+    this.rpio.pwmSetClockDivider( self.config.hardware.PWM.CLOCK_INTERVAL_DIVIDER );
+
+    this.rpio.pwmSetRange( self.r_pin, self.config.hardware.PWM.RANGE );
+    this.rpio.pwmSetRange( self.g_pin, self.config.hardware.PWM.RANGE );
+    this.rpio.pwmSetRange( self.b_pin, self.config.hardware.PWM.RANGE );
+
+    this.rpio.open( self.r_pin, this.rpio.PWM );
+    this.rpio.open( self.g_pin, this.rpio.PWM );
+    this.rpio.open( self.b_pin, this.rpio.PWM );
 
     this.testCycle( [ 4, 2, 1, 2, 4 ] );
 
-    // this.log.write('warning', 'sensor', 'Testing LED Output' );
-    // this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.HIGH );
-    // this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.HIGH );
-    // this.rpio.msleep( 250 );
-    // this.rpio.write( LOCAL_STATE_INDICATOR_PIN, this.rpio.LOW );
-    // this.rpio.write( REMOTE_STATE_INDICATOR_PIN, this.rpio.LOW );
+    this.serial = new SerialPort( self.config.serialPort, { baudRate: self.config.baudRate }, function( err ) {
+        if ( err ) { self.log.write('error', 'io:serial', err.message ); }
+        self.log.write('message', 'io:serial', `Opened Serial Port on ${self.config.serialPort} at ${self.config.baudRate} baud.`);
 
-    this.pollHardwareState();
+        self.pollHardwareState();
+        self.writeHardwareState();
 
-    this.writeHardwareState();
+    });
+
+
+
+
+
+};
+
+
+
+GlowNodeIO.prototype.terminate = function() {
+
+    var self = this;
+
+    this.log.write('message', 'io:manage', 'Received polite quit request...' );
+    this.intervals.forEach( function( interval ) { clearInterval( interval ); });
+
+    this.rpio.open( self.r_pin, this.rpio.PIN_RESET );
+    this.rpio.open( self.g_pin, this.rpio.PIN_RESET );
+    this.rpio.open( self.b_pin, this.rpio.PIN_RESET );
+
+    this.serial.close( function() { self.log.write('message', 'io:manage', 'Closed serial port.'); });
 
 };
 
