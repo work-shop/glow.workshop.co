@@ -152,6 +152,8 @@ GlowNodeState.prototype.updateSelf = function( binaryState ) {
 
 GlowNodeState.prototype.update = function( payload ) {
 
+    this.log.printState();
+
     this.state.set(
         payload.key,
         {
@@ -210,7 +212,7 @@ GlowNodeState.prototype.getOscillators = function( t ) {
      * If the number of active nodes is zero, this term is undefined, so we correct by adding a small
      * positive adjustment to the denominator of the frequency term.
      */
-    let f_factor = 1 / (active_nodes + 0.1);
+    let f_factor = (active_nodes === 0 ) ? 4 : 2 / active_nodes;
 
     let r_f = f_factor;
     let g_f = f_factor;

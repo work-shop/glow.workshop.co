@@ -1,9 +1,6 @@
 'use strict';
 
 
-
-const map = function( t, p ) { return Math.round(((100/1024) * t) * p) / p; };
-
 const adjust_interval_endpoint = function( drift, io ) { io[ ( io.state === 0 ) ? 'low' : 'high' ] += drift; };
 
 module.exports = function( io ) {
@@ -17,8 +14,8 @@ module.exports = function( io ) {
              */
             let threshold = Math.min( 102.4, (io.high - io.low) / 2 );
 
-            io.log.write('message', 'io:sensor', `Threshold = ${threshold}, ${ map( threshold, 10000 ) }`);
-            io.log.write('message', 'io:sensor', `drift = ${ drift } = ${ map( drift, 10000 ) }`);
+            // io.log.write('message', 'io:sensor', `Threshold = ${threshold}, ${ map( threshold, 10000 ) }`);
+            // io.log.write('message', 'io:sensor', `drift = ${ drift } = ${ map( drift, 10000 ) }`);
 
             /**
              * In this case, the drift is less than the specified threshold,
@@ -27,7 +24,7 @@ module.exports = function( io ) {
              */
             if ( Math.abs( drift ) < threshold ) {
 
-                io.log.write('message', 'io:sensor', `Drift below threshold, updating endpoint by ${ drift }.`);
+                //io.log.write('message', 'io:sensor', `Drift below threshold, updating endpoint by ${ drift }.`);
 
                 adjust_interval_endpoint( drift, io );
 
