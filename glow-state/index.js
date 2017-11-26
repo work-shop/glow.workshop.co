@@ -191,28 +191,23 @@ GlowNodeState.prototype.getOscillators = function( t ) {
     let active_nodes = state.reduce( function( b,a ) { return b + a.state; }, 0);
 
     /**
+     * These amplitude terms are used to balance the Red, Green, and Blue channels. Each should be in the range 0-1.
+     * Additionally, the amplitude terms are functions of the current state of the system.
      * The amplitude is proportional to the ratio of active to total nodes.
      * The amplitude has a zero when no nodes are active. We correct for this switch
      * a small ground state term.
      */
-    let a_factor = (active_nodes / state.length) + 0.1;
+    let a_factor = (active_nodes / state.length);
 
-    /**
-     * These amplitude terms are used to balance the Red, Green, and Blue channels. Each should be in the range 0-1.
-     * Additionally, the amplitude terms are functions of the current state of the system.
-     */
     let r_a = a_factor;
     let g_a = a_factor;
     let b_a = a_factor;
 
     /**
-     * These frequency terms determine the speed of the oscillation at each channel.
-     * The frequency terms are used to control speed of oscillation of each channel.
-     * the frequency of the system is proportional to the reciprocal of the number of active nodes.
-     * If the number of active nodes is zero, this term is undefined, so we correct by adding a small
+     * The frequency is proportional to the number of active nodes (with π as a normalizing term.)
      * positive adjustment to the denominator of the frequency term.
      */
-    let f_factor = (active_nodes === 0 ) ? 4 : 2 / active_nodes;
+    let f_factor = Math.PI * active_nodes;
 
     let r_f = f_factor;
     let g_f = f_factor;
@@ -220,6 +215,8 @@ GlowNodeState.prototype.getOscillators = function( t ) {
 
     /**
      * These phase terms slide the range around in time.
+     * The phase factors determine what the static ground state is. If ϕ = 0, then
+     * the the ground stat is given as 0
      */
     let r_ph = 0;
     let g_ph = 0;
