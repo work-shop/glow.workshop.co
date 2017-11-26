@@ -39,7 +39,7 @@ module.exports = function( io ) {
                      * Sensor rising edge detected. Set the state to high, post an update.
                      */
                      io.state = 1;
-                     io.server.state.updateSelf( 1 );
+                     io.server.send( 1 );
 
                 } else if ( io.state === 0 && drift < 0 ) {
                     /**
@@ -60,7 +60,7 @@ module.exports = function( io ) {
                      * Sensor falling edge detected. Set state to low, post an update.
                      */
                      io.state = 0;
-                     io.server.state.updateSelf( 0 );
+                     io.server.send( 0 );
 
                 } else {
                     /**
