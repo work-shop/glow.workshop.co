@@ -183,10 +183,54 @@ GlowNodeState.prototype.purge = function( ip, port ) {
  * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
  */
 GlowNodeState.prototype.getOscillators = function( t ) {
+
+    let state = this.get();
+
+    let active_nodes = state.reduce( function( b,a ) { return b + a.state; }, 0);
+
+    /**
+     * The amplitude is proportional to the ratio of active to total nodes.
+     * The amplitude has a zero when no nodes are active. We correct for this switch
+     * a small ground state term.
+     */
+    let a_factor = (active_nodes / state.length) + 0.1;
+
+    /**
+     * These amplitude terms are used to balance the Red, Green, and Blue channels. Each should be in the range 0-1.
+     * Additionally, the amplitude terms are functions of the current state of the system.
+     */
+    let r_a = a_factor;
+    let g_a = a_factor;
+    let b_a = a_factor;
+
+    /**
+     * These frequency terms determine the speed of the oscillation at each channel.
+     * The frequency terms are used to control speed of oscillation of each channel.
+     * the frequency of the system is proportional to the reciprocal of the number of active nodes.
+     * If the number of active nodes is zero, this term is undefined, so we correct by adding a small
+     * positive adjustment to the denominator of the frequency term.
+     */
+    let f_factor = 1 / (active_nodes + 0.1);
+
+    let r_f = f_factor;
+    let g_f = f_factor;
+    let b_f = f_factor;
+
+    /**
+     * These phase terms slide the range around in time.
+     */
+    let r_ph = 0;
+    let g_ph = 0;
+    let b_ph = 0;
+
+    let r = r_a * Math.cos( r_f * t + r_ph );
+    let g = g_a * Math.cos( g_f * t + g_ph );
+    let b = b_a * Math.cos( b_f * t + b_ph );
+
     return {
-        r: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
-        g: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
-        b: parseInt( Math.floor( this.map( Math.cos( t  * (2 + this.local_state * 4 ) ) ) ) ),
+        r: parseInt( Math.floor( this.map( r ) ) ),
+        g: parseInt( Math.floor( this.map( g ) ) ),
+        b: parseInt( Math.floor( this.map( b ) ) ),
     };
 };
 
