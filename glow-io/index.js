@@ -7,23 +7,36 @@ var GlowNodeIO = function( server ) {
     if (!(this instanceof GlowNodeIO)) { return new GlowNodeIO( server ); }
     var self = this;
 
+    /**
+     * IO resources and constants
+     */
     self.log = server.log;
 
     self.config = server.config;
 
-    self.threshold = server.config.threshold;
+    self.dryrun = server.config.dryrun;
 
     self.writePollingInterval = server.config.writePollingInterval;
 
     self.readPollingInterval = server.config.readPollingInterval;
 
-    self.dryrun = server.config.dryrun;
+    /**
+     * TODO: make this a more general parameter that can be independently configured.
+     */
+    self.driftPollingInterval = 10 * server.config.readPollingInterval;
+
+    /**
+     * 30 second calibration period sets the server's low and high ends.
+     * The box will adjust these for drift over time.
+     *
+     * TODO: make this a more general parameter that can be independently configured.
+     */
+    self.calibration_period = 1000;
+
 
     self.server = server;
 
     self.rpio = server.config.rpio;
-
-    self.intervals = [];
 
     self.r_pin = server.config.hardware.PWM.R_PIN;
 
@@ -31,9 +44,41 @@ var GlowNodeIO = function( server ) {
 
     self.b_pin = server.config.hardware.PWM.B_PIN;
 
+
+    /**
+     * IO state
+     */
+    self.intervals = [];
+
     self.time = 0;
 
     self.timestep = (self.writePollingInterval * Math.PI) / 1000;
+
+    self.sensor = null;
+
+    self.low = null;
+
+    self.high = null;
+
+    self.state = 0;
+
+    /**
+     * IO Instance Methods
+     */
+
+    /**
+     * This routine instantiates interruptable polling on the specified serial port.
+     * It reassembles serial packets received from the Arduino, and sends state updates
+     * to the internal state of the node.
+     */
+    self.pollHardwareState = require('./sensor-watch.js')( self );
+
+    /**
+     * This routine runs a hardware calibration routine to set the Low and High sends
+     * of this node's sensor spectrum. This routine will block sensor processing until calibrated,
+     * and requires User Input. It WILL NOT block network input, however.
+     */
+    self.calibrateHardwareState = require('./sensor-calibrate.js')( self );
 
 };
 
@@ -58,45 +103,16 @@ GlowNodeIO.prototype.writeHardwareState = function() {
 
 };
 
-
-
 /**
- * This routine instantiates interruptable polling on the specified serial port.
- * It reassembles serial packets received from the Arduino, and sends state updates
- * to the internal state of the node.
+ * This routine clears any scheduled intervals.
  */
-GlowNodeIO.prototype.pollHardwareState = function() {
+GlowNodeIO.prototype.clearSchedule = function() {
 
-    var self = this;
-    let packet = '';
-
-    this.log.write('message', 'io:serial', `Starting hardware read on ${ self.config.serialPort } (${ self.config.baudRate} baud).` );
-
-    self.serial.on('readable', function() {
-
-        /** Our packets are being sent from the Arduino in newline-delimited chunks.
-         * If the last bit read from the serial port is '\n', then we've received a complete packet,
-         * if not, then we're in the middle of a packet, and should concatenate.
-         */
-        if ( packet[ packet.length  - 1 ] !== '\n' ) {
-
-            packet += self.serial.read();
-
-        } else {
-
-            self.server.state.updateSelf( ( parseInt( packet.substring( 0, packet.length - 1 ) ) > self.config.threshold ) ? 1 : 0 );
-
-            packet = self.serial.read();
-
-        }
-
-    });
+    this.sensor.clearIntervals();
 
     return this;
 
 };
-
-
 
 GlowNodeIO.prototype.testCycle = function( steps ) {
 
@@ -117,6 +133,12 @@ GlowNodeIO.prototype.testCycle = function( steps ) {
 
 };
 
+/**
+ * This routine starts the process, opening the required pins for PWM writing,
+ * opening the serial port for sensor readings, and running a brief test testCycle
+ * to ensure the pins are connected properly.
+ *
+ */
 GlowNodeIO.prototype.start = function() {
 
     var self = this;
@@ -141,8 +163,16 @@ GlowNodeIO.prototype.start = function() {
         } else {
 
             self.log.write('message', 'io:serial', `Opened Serial Port on ${self.config.serialPort} at ${self.config.baudRate} baud.`);
-            self.pollHardwareState();
-            self.writeHardwareState();
+
+            self.sensor = new require('./sensor-poll.js')( self );
+
+            self.calibrateHardwareState( function() {
+
+                self.pollHardwareState();
+
+                self.writeHardwareState();
+
+            });
 
         }
 
@@ -151,19 +181,24 @@ GlowNodeIO.prototype.start = function() {
 };
 
 
-
+/**
+ * This routine resets any active pins, closes the utilized serial port,
+ * and clears any scheduled intervals. This routine should not be called directly,
+ * It is called by the server when it receives a termination request from the process.
+ */
 GlowNodeIO.prototype.terminate = function() {
 
     var self = this;
 
     this.log.write('message', 'io:manage', 'Received polite quit request...' );
-    this.intervals.forEach( function( interval ) { clearInterval( interval ); });
+
+    this.clearSchedule();
 
     this.rpio.open( self.r_pin, this.rpio.PIN_RESET );
     this.rpio.open( self.g_pin, this.rpio.PIN_RESET );
     this.rpio.open( self.b_pin, this.rpio.PIN_RESET );
 
-    this.serial.close( function() { self.log.write('message', 'io:manage', 'Closed serial port.'); });
+    this.serial.close( function() { self.log.write('message', 'io:serial', 'Closed serial port.'); });
 
 };
 

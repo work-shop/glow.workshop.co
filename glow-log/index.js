@@ -4,6 +4,15 @@ require('colors');
 
 function decideType( type ) {
     switch ( type ) {
+        case 'admin':
+            return type.blue.bold;
+
+        case 'drift':
+            return type.bold;
+
+        case 'pressure':
+            return type;
+
         case 'message':
             return type.green.bold;
 
@@ -29,8 +38,12 @@ var GlowLog = function( config ) {
         return Math.round( x * (1/self.precision) ) * self.precision;
     }
 
-    self.write = function( type, source, message ) {
-        if ( config.debug ) { console.log(['['.gray, decideType( type ), ']\t('.gray, source, ')\t'.gray, message ].join('') ); }
+    self.write = function( type, source, message, loglevel ) {
+
+        loglevel = loglevel || 0;
+
+        // TODO: replace this hardcoded log-level constant with a configuration parameter. This can also replace 'debug' at the cmd line.
+        if ( config.debug || loglevel > 3 ) { console.log(['['.gray, decideType( type ), ']\t('.gray, source, ')\t'.gray, message ].join('') ); }
 
         return this;
     };
