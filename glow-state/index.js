@@ -152,7 +152,7 @@ GlowNodeState.prototype.updateSelf = function( binaryState ) {
 
 GlowNodeState.prototype.update = function( payload ) {
 
-    this.log.printState();
+    this.log.printState( this.state );
 
     this.state.set(
         payload.key,
