@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "git push pi-0 master",
     "start-dry": "node index.js --debug --dry-run --write-polling-interval=50 --read-polling-interval=2000",
-    "start-on-pi": "node index.js --debug --write-polling-interval=50 --read-polling-interval=2000 --interface=wlan0 --serial-port='/dev/ttyACM0'"
+    "start-on-pi": "node index.js --debug --write-polling-interval=50 --read-polling-interval=250 --interface=wlan0 --serial-port='/dev/ttyACM0'"
   },
   "repository": {
     "type": "git",
