@@ -207,7 +207,7 @@ GlowNodeState.prototype.getOscillators = function( t ) {
      * The frequency is proportional to the number of active nodes (with π as a normalizing term.)
      * positive adjustment to the denominator of the frequency term.
      */
-    let f_factor = Math.PI * active_nodes;
+    let f_factor = 2 * Math.PI * active_nodes / state.length;
 
     let r_f = f_factor;
     let g_f = f_factor;
@@ -218,9 +218,9 @@ GlowNodeState.prototype.getOscillators = function( t ) {
      * The phase factors determine what the static ground state is. If ϕ = 0, then
      * the the ground stat is given as 0
      */
-    let r_ph = 0;
-    let g_ph = 0;
-    let b_ph = 0;
+    let r_ph = - Math.PI; // cancel the red channel
+    let g_ph = - Math.PI / 2;
+    let b_ph = - Math.PI;
 
     let r = r_a * Math.cos( r_f * t + r_ph );
     let g = g_a * Math.cos( g_f * t + g_ph );
