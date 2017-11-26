@@ -91,6 +91,7 @@ module.exports = {
      * Object. Configuration Constants for Hardware.
      */
     'hardware': {
+        'STARTUP_DELAY': 8000,
         'PWM': {
             /**
              * Power of 2. Internal divider that sets how frequently the PWM clock is checked.
