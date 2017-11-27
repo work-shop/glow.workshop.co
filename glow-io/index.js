@@ -31,7 +31,7 @@ var GlowNodeIO = function( server ) {
      *
      * TODO: make this a more general parameter that can be independently configured.
      */
-    self.calibration_period = 5000;
+    self.calibration_period = 2500;
 
 
     self.server = server;

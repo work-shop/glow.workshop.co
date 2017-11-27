@@ -34,10 +34,6 @@ var GlowLog = function( config ) {
 
     self.precision = 0.01;
 
-    function truncate( x ) {
-        return Math.round( x * (1/self.precision) ) * self.precision;
-    }
-
     self.write = function( type, source, message, loglevel ) {
 
         loglevel = loglevel || 0;
@@ -55,12 +51,7 @@ var GlowLog = function( config ) {
 
             state.forEach( function( value, key ) {
 
-                console.log(['['.gray, value.ip, ':'.gray, value.port, ']\t('.gray, key, ')'.gray].join('') );
-                console.log([
-                    '\t\t\tstate: '.gray, value.state, ', signature: ('.gray,
-                    truncate(value.parameters.cos.a),')cos('.gray, truncate(value.parameters.cos.f), 't'.blue,
-                    ') + ('.gray, truncate(value.parameters.sin.a), ')sin('.gray, truncate(value.parameters.sin.f), 't'.blue, ')'.gray
-                ].join('') );
+                console.log(['['.gray, value.ip, ':'.gray, value.port, ']\t('.gray, key, ')\t\tstate: '.gray, `${ value.state }`.bold ].join('') );
 
             });
         }
