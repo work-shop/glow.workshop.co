@@ -197,7 +197,7 @@ GlowNodeState.prototype.getOscillators = function( t ) {
      * The amplitude has a zero when no nodes are active. We correct for this switch
      * a small ground state term.
      */
-    let a_factor = (active_nodes / state.length);
+    let a_factor = (active_nodes === 0) ? 1 : (active_nodes / state.length);
 
     let r_a = a_factor;
     let g_a = a_factor;
