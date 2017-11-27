@@ -62,6 +62,8 @@ GlowNodeSensor.prototype.pollPressure = function( action, interval ) {
 
     this.io.log.write('message', 'io:serial', `Starting pressure averaging read on ${ interval }ms.` );
 
+    self.samples.length = 0;
+
     this.pressure_interval = setInterval( function() {
 
         let average_pressure = self.samples
@@ -92,6 +94,8 @@ GlowNodeSensor.prototype.pollDrift = function( action, interval ) {
     interval = interval || this.io.driftPollingInterval;
 
     this.io.log.write('message', 'io:serial', `Starting drift averaging read on ${ interval }ms.` );
+
+    self.drifts.length = 0;
 
     this.drift_interval = setInterval( function() {
 
