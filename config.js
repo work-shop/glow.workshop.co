@@ -92,6 +92,9 @@ module.exports = {
      */
     'hardware': {
         'STARTUP_DELAY': 8000,
+        'FSR': {
+            'MAX_VALUE': 1024
+        },
         'PWM': {
             /**
              * Power of 2. Internal divider that sets how frequently the PWM clock is checked.

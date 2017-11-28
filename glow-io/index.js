@@ -78,7 +78,7 @@ var GlowNodeIO = function( server ) {
      * of this node's sensor spectrum. This routine will block sensor processing until calibrated,
      * and requires User Input. It WILL NOT block network input, however.
      */
-    self.calibrateHardwareState = require('./sensor-calibrate.js')( self );
+    self.calibrateHardwareState = require('./sensor-guess.js')( self );
 
 };
 
