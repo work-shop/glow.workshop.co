@@ -39,15 +39,17 @@ module.exports = function( self ) {
 
         const n = state.length;
 
+        const R_a = a_r( k, n );
+
+        const G_a = a_g( k, n );
+
+        const B_a = a_b( k, n );
+
         if ( self.local_state === 0 ) {
 
             const map = linearmap( 0, 2*n )( 0, self.config.hardware.PWM.MAX_INTERVAL );
 
             const omega = f( k, n );
-
-            const R_a = a_r( k, n );
-            const G_a = a_g( k, n );
-            const B_a = a_b( k, n );
 
             const r = map( R_a * Math.sin( omega * t ) + R_a );
             const g = map( G_a * Math.sin( omega * t ) + G_a );
@@ -64,10 +66,19 @@ module.exports = function( self ) {
 
         } else if ( self.local_state === 1 ) {
 
+            const map = linearmap( 0, n )( 0, self.config.hardware.PWM.MAX_INTERVAL );
+
+            const r = map( R_a );
+            const g = map( G_a );
+            const b = map( B_a );
+
             return {
-                r: (2*k)/n - 1,
-                g: (2*k)/n - 1,
-                b: (2*k)/n - 1
+
+                r: parseInt( Math.floor( r ) ),
+
+                g: parseInt( Math.floor( g ) ),
+
+                b: parseInt( Math.floor( b ) )
             };
 
         }
