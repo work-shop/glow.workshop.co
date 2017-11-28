@@ -5,7 +5,7 @@ const linearmap = require('./linear-map.js');
 const a = 0.85;
 
 const f = function( k, n ) {
-    return Math.PI * a * ( k + 1 ) / n
+    return Math.PI * a * ( k + 1 ) / n;
 };
 
 const A = function( c1, c2, c3 ) {
@@ -35,7 +35,7 @@ module.exports = function( self ) {
 
         const s = self.local_state;
 
-        const k = state.get().reduce( function( b,a ) { return b + a.state; }, 0) - s;
+        const k = state.reduce( function( b,a ) { return b + a.state; }, 0) - s;
 
         const n = state.length;
 
@@ -54,6 +54,7 @@ module.exports = function( self ) {
             const b = map( B_a * Math.sin( omega * t ) + B_a );
 
             return {
+
                 r: parseInt( Math.floor( r ) ),
 
                 g: parseInt( Math.floor( g ) ),

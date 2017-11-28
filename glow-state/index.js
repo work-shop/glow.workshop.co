@@ -14,6 +14,8 @@ var GlowNodeState = function( config, log ) {
 
     self.log = log;
 
+    self.config = config;
+
     self.map = map( -1, 1 )( 0, config.hardware.PWM.MAX_INTERVAL );
 
     self.interface = getInterface( config, log );
