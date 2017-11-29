@@ -98,8 +98,11 @@ module.exports = {
         'PWM': {
             /**
              * Power of 2. Internal divider that sets how frequently the PWM clock is checked.
+             *
+             * To determine the PWM frequency, use: 19.2e6 / DIVIDER / RANGE = Freq in MHz.
+             * Seek a range between 50Hz and 1kHz
              */
-            'CLOCK_INTERVAL_DIVIDER': 8,
+            'CLOCK_INTERVAL_DIVIDER': 256,
             /**
              * Power of 2. Maximum PWM pulse range.
              */
