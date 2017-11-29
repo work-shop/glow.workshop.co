@@ -3,6 +3,8 @@
 
 const adjust_interval_endpoint = function( drift, io ) { io[ ( io.state === 0 ) ? 'low' : 'high' ] += drift; };
 
+const map = require('../glow-state/linear-map.js')( 0, 1024 )( 0, 100 );
+
 module.exports = function( io ) {
     return function() {
 
@@ -14,8 +16,8 @@ module.exports = function( io ) {
              */
             let threshold = Math.min( 51.2, (io.high - io.low) / 2 );
 
-            // io.log.write('message', 'io:sensor', `Threshold = ${ threshold }`);
-            // io.log.write('message', 'io:sensor', `drift = ${ drift }`);
+            //io.log.write('message', 'io:sensor', `Threshold = ${ map( threshold ) }`);
+            io.log.write('message', 'io:sensor', `drift = ${ map( drift ) }`);
 
             /**
              * In this case, the drift is less than the specified threshold,
