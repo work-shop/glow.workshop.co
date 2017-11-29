@@ -19,6 +19,9 @@ var GlowNodeSensor = function( io ) {
 
     io.log.write('message', 'io:serial', `Starting hardware read on ${ io.config.serialPort } (${ io.config.baudRate} baud).` );
 
+    let i = 0;
+    let print_interval = 50;
+
     /**
      * Whenever the serial port is readable, continue reconstructing the last packet received,
      * or begin reconstructing the next one.
@@ -40,7 +43,19 @@ var GlowNodeSensor = function( io ) {
             self.drifts.push( sample - self.samples[ self.samples.length - 1 ] );
             self.samples.push( sample );
 
+            if ( i === print_interval ) {
+                if ( self.samples.length > 0 ) {
+                    let avg = self.samples.filter( function( x ) { return !isNaN( x ); } ).reduce( function(b,a) { return b + a; }, 0) / self.samples.length;
+                    io.log.write('message', 'io:serial', `average of ${ self.samples.length } samples: ${ avg }`);
+                }
+
+                i = 0;
+                self.samples.length = 0;
+            }
+
             self.packet = io.serial.read();
+
+            i += 1;
 
         }
 
