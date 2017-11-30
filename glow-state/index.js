@@ -77,7 +77,7 @@ var GlowNodeState = function( config, log ) {
      * @param t the current uptime of the system. This is used to produce the oscillation.
      * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
      */
-    GlowNodeState.prototype.getOscillators = require('./oscillators-B.js')( self );
+    GlowNodeState.prototype.getOscillators = require('./oscillators-test.js')( self );
 
 
     /**
@@ -164,8 +164,6 @@ GlowNodeState.prototype.updateSelf = function( binaryState ) {
 
 GlowNodeState.prototype.update = function( payload ) {
 
-    this.log.printState( this.state );
-
     this.state.set(
         payload.key,
         {
@@ -176,6 +174,8 @@ GlowNodeState.prototype.update = function( payload ) {
             port: payload.port
         }
     );
+
+    this.log.printState( this.state );
 
     return this;
 };
