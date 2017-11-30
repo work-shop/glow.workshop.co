@@ -22,8 +22,8 @@ module.exports = function( self ) {
 
             return {
                 r: parseInt( Math.floor( map( 1 ) ) ),
-                g: 0,
-                b: 0
+                g: parseInt( Math.floor( map( 1 ) ) ),
+                b: parseInt( Math.floor( map( 1 ) ) )
             };
 
         } else {
