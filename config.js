@@ -18,7 +18,7 @@ module.exports = {
      * Note, this doesn't necesarily include the port this node is running on, but it can. If it does, this nodes port
      * will be excluded from the check.
      */
-    'port_scan_range': [8000, 8010],
+    'port_scan_range': [8000, 8000],
     /**
      * <int>. If the specified port doesn't work, how high should we climb before giving up?
      */
