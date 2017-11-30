@@ -17,7 +17,7 @@ module.exports = function( io ) {
             let threshold = Math.min( 51.2, (io.high - io.low) / 2 );
 
             //io.log.write('message', 'io:sensor', `Threshold = ${ map( threshold ) }`);
-            io.log.write('message', 'io:sensor', `drift = ${ map( drift ) }`);
+            //io.log.write('message', 'io:sensor', `drift = ${ map( drift ) }`);
 
             /**
              * In this case, the drift is less than the specified threshold,
