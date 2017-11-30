@@ -10,9 +10,13 @@ module.exports = function( self ) {
 
         const state = self.get();
 
-        const s = self.local_state;
+        const s = parseInt( self.local_state );
 
         const k = state.reduce( function( b,a ) { return b + a.state; }, 0) - s;
+
+        // console.log( `local state = ${ s }`);
+        // console.log( `current k = ${ k }`);
+        // console.log( `current n = ${ state.length }`);
 
         if ( s === 1 ) {
 
