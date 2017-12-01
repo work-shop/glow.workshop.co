@@ -37,6 +37,8 @@ var GlowNodeSensor = function( io ) {
 
             let sample = parseInt( self.packet.substring( 0, self.packet.length - 1 ) );
 
+            io.log.write('message', 'io:raw-sensor', `${ sample }`);
+
             self.drifts.push( sample - self.samples[ self.samples.length - 1 ] );
             self.samples.push( sample );
 
