@@ -77,7 +77,7 @@ var GlowNodeState = function( config, log ) {
      * @param t the current uptime of the system. This is used to produce the oscillation.
      * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
      */
-    GlowNodeState.prototype.getOscillators = require('./oscillators-C.js')( self );
+    GlowNodeState.prototype.getOscillators = require('./oscillators-discrete.js')( self );
 
     /**
      * NOTE: Try hardcoding the valid IPs, for now.
