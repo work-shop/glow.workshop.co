@@ -101,10 +101,10 @@ GlowNodeServer.prototype.listen = function( next ) {
 
     }).listen( this.port, function()  {
 
-        self.log.write('message', 'server', `This node is listening on port ${self.port}`);
+        self.state = new GlowNodeState( self.config, self.log );
+        self.log.write('message', 'server', `This node is listening on ${ self.state.ip }:${self.port}`);
         self.log.write('message', 'server', `This node has key: ${self.config.key}`);
         self.log.write('message', 'server', `This node has salt: ${self.config.salt}`);
-        self.state = new GlowNodeState( self.config, self.log );
         next();
 
     });
