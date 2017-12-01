@@ -81,9 +81,9 @@ module.exports = function( server ) {
                     }
 
                 })
-                .catch( function(  ) {
+                .catch( function( err ) {
 
-                    server.log.write('warning', 'server', `Error from ${ip}: ${err.message}. `)
+                    server.log.write('warning', 'server', `Error from ${ip}: ${err.message}. `);
                     server.state.candidates.add( ip );
 
                 });

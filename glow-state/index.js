@@ -79,20 +79,24 @@ var GlowNodeState = function( config, log ) {
      */
     GlowNodeState.prototype.getOscillators = require('./oscillators-test.js')( self );
 
+    /**
+     * NOTE: Try hardcoding the valid IPs, for now.
+     */
+    self.candidates.add( '192.168.1.18:8000' );
+    self.candidates.add( '192.168.1.19:8000' );
+    self.candidates.add( '192.168.1.21:8000' );
 
     /**
-     * TODO:
-     * Determine actual netmask for local subnet this node is connected to,
-     * rather than looping through the entire Class C network.
+     * This routine should add valid candidates to the array.
      */
-    new Netmask( self.interface.address, self.interface.netmask ).forEach( function( ip ) {
-        for ( var port = self.port_scan_range[0]; port <= self.port_scan_range[1]; port += 1 ) {
-            if ( !(ip === self.ip && port === self.port) ) {
-                self.candidates.add( [ ip,':',port ].join('') );
-            }
-        }
-
-    });
+    // new Netmask( self.interface.address, self.interface.netmask ).forEach( function( ip ) {
+    //     for ( var port = self.port_scan_range[0]; port <= self.port_scan_range[1]; port += 1 ) {
+    //         if ( !(ip === self.ip && port === self.port) ) {
+    //             self.candidates.add( [ ip,':',port ].join('') );
+    //         }
+    //     }
+    //
+    // });
 
     self.state.set(
         self.local_key,
