@@ -86,6 +86,7 @@ var GlowNodeState = function( config, log ) {
     self.addIPPair( '192.168.1.18', 8000 );
     self.addIPPair( '192.168.1.19', 8000 );
     self.addIPPair( '192.168.1.21', 8000 );
+    self.addIPPair( '192.168.1.22', 8000 );
 
     /**
      * This routine should add valid candidates to the array.
