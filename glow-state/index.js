@@ -82,9 +82,10 @@ var GlowNodeState = function( config, log ) {
     /**
      * NOTE: Try hardcoding the valid IPs, for now.
      */
-    self.candidates.add( '192.168.1.18:8000' );
-    self.candidates.add( '192.168.1.19:8000' );
-    self.candidates.add( '192.168.1.21:8000' );
+
+    self.addIPPair( '192.168.1.18', 8000 );
+    self.addIPPair( '192.168.1.19', 8000 );
+    self.addIPPair( '192.168.1.21', 8000 );
 
     /**
      * This routine should add valid candidates to the array.
@@ -109,6 +110,14 @@ var GlowNodeState = function( config, log ) {
         }
     );
 
+};
+
+GlowNodeState.prototype.addIPPair = function( ip, port ) {
+    if ( !(ip === this.ip && port === this.port) ) {
+        this.candidates.add( [ ip, ':', port ].join('') );
+    }
+
+    return this;
 };
 
 GlowNodeState.prototype.candidatesArray = function() { return this.candidates.toArray(); };
