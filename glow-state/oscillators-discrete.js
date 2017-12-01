@@ -53,7 +53,7 @@ module.exports = function( self ) {
 
             } else if ( k_n < 1/3 ) {
 
-                let A_b = 0.75;
+                let A_b = 0.7;
                 let A_y = 0.1;
 
                 return {
@@ -66,8 +66,8 @@ module.exports = function( self ) {
 
             } else if ( k_n < 1/2 ) {
 
-                let A_b = 0.6;
-                let A_y = 0.2;
+                let A_b = 0.4;
+                let A_y = 0.5;
 
                 return {
 
@@ -79,7 +79,7 @@ module.exports = function( self ) {
 
             } else if ( k_n < 2/3 ) {
 
-                let A_b = 0.1;
+                let A_b = 0.3;
                 let A_y = 0.7;
 
                 return {

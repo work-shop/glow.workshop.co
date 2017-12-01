@@ -14,11 +14,11 @@ module.exports = function( io ) {
              * And out low and high points. The fixed threshold is given as 102.4,
              * or 10% of the range.
              */
-            let drift_threshold = Math.min( 51.2, (io.high - io.low) / 2 );
+            let drift_threshold = Math.min( 102.4, (io.high - io.low) / 2 );
 
             //io.log.write('message', 'io:sensor', `Threshold = ${ map( threshold ) }`);
-            //io.log.write('message', 'io:sensor', `drift over ${ samples } samples = ${ map( drift ) }`);
-            //io.log.write('message', 'io:sensor', `pressure over ${ samples } samples = ${ sensorValue }`);
+            io.log.write('message', 'io:sensor', `drift over ${ samples } samples = ${ map( drift ) }`);
+            io.log.write('message', 'io:sensor', `pressure over ${ samples } samples = ${ sensorValue }`);
 
             /**
              * In this case, the drift is less than the specified threshold,

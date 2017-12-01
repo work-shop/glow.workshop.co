@@ -36,7 +36,7 @@ module.exports = {
     /**
      * Int in the range [0, 1024]. The threshold value above which the sensor(s) should be considered hot.
      */
-    'threshold': 400,
+    'threshold': 600,
     /**
      * Real. Specify an amplitude for the sine component of this node's pulse.
      */

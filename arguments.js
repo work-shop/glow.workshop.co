@@ -54,7 +54,7 @@ parser.addArgument(
     ['-t', '--threshold'],
     {
         dest: 'threshold',
-        help: 'Float (Optional). Specify the threshold value above which a sensor reading should be considered hot.',
+        help: 'Int (Optional). Specify the threshold value above which a sensor reading should be considered hot.',
         defaultValue: cfg.threshold
     }
 );
