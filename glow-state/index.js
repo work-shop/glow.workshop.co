@@ -1,6 +1,6 @@
 'use strict';
 
-var Netmask = require('netmask').Netmask;
+//var Netmask = require('netmask').Netmask;
 var FastSet = require('collections/fast-set');
 var SortedMap = require('collections/sorted-map');
 
@@ -77,7 +77,7 @@ var GlowNodeState = function( config, log ) {
      * @param t the current uptime of the system. This is used to produce the oscillation.
      * @return Object { r: Int, g: Int, b: Int }. Oscillators for R, G, and B, PWM, given the current network state.
      */
-    GlowNodeState.prototype.getOscillators = require('./oscillators-test.js')( self );
+    GlowNodeState.prototype.getOscillators = require('./oscillators-C.js')( self );
 
     /**
      * NOTE: Try hardcoding the valid IPs, for now.
@@ -89,6 +89,7 @@ var GlowNodeState = function( config, log ) {
     self.addIPPair( '192.168.1.19', 8000 );
     self.addIPPair( '192.168.1.21', 8000 );
     self.addIPPair( '192.168.1.22', 8000 );
+    self.addIPPair( '192.168.1.11', 8000 );
 
     /**
      * This routine should add valid candidates to the array.
