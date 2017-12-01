@@ -82,8 +82,10 @@ var GlowNodeState = function( config, log ) {
     /**
      * NOTE: Try hardcoding the valid IPs, for now.
      */
-
+    self.addIPPair( '192.168.1.10', 8000 );
+    self.addIPPair( '192.168.1.17', 8000 );
     self.addIPPair( '192.168.1.18', 8000 );
+    self.addIPPair( '192.168.1.20', 8000 );
     self.addIPPair( '192.168.1.19', 8000 );
     self.addIPPair( '192.168.1.21', 8000 );
     self.addIPPair( '192.168.1.22', 8000 );
