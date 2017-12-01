@@ -33,6 +33,8 @@ var GlowNodeIO = function( server ) {
      */
     self.calibration_period = 2500;
 
+    self.sample_threshold = server.config.threshold;
+
 
     self.server = server;
 

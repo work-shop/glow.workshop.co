@@ -37,8 +37,6 @@ var GlowNodeSensor = function( io ) {
 
             let sample = parseInt( self.packet.substring( 0, self.packet.length - 1 ) );
 
-            io.log.write('message', 'io:raw-sensor', `${ sample }`);
-
             self.drifts.push( sample - self.samples[ self.samples.length - 1 ] );
             self.samples.push( sample );
 
@@ -105,7 +103,13 @@ GlowNodeSensor.prototype.pollDrift = function( action, interval ) {
             .filter( function( a ) { return !isNaN( a ); })
             .reduce( function(b,a) { return b + a; }, 0 );
 
-        action( integrated_drift, self.drifts.length );
+        let pressure_subset = self.samples.slice( self.samples.length - self.drifts.length, self.samples.length );
+
+        let average_pressure = pressure_subset
+            .filter( function( a ) { return !isNaN( a ); })
+            .reduce( function(b,a) { return b + a; }, 0 ) / pressure_subset.length;
+
+        action( integrated_drift, self.drifts.length, average_pressure );
 
         self.drifts.length = 0;
 

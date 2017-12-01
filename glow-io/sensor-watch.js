@@ -8,29 +8,46 @@ const map = require('../glow-state/linear-map.js')( 0, 1024 )( 0, 100 );
 module.exports = function( io ) {
     return function() {
 
-        io.sensor.pollDrift( function( drift ) {
+        io.sensor.pollDrift( function( drift, samples, sensorValue ) {
 
             /** Take the smaller of a fixed Threshold, and the split difference
              * And out low and high points. The fixed threshold is given as 102.4,
              * or 10% of the range.
              */
-            let threshold = Math.min( 51.2, (io.high - io.low) / 2 );
+            let drift_threshold = Math.min( 51.2, (io.high - io.low) / 2 );
 
             //io.log.write('message', 'io:sensor', `Threshold = ${ map( threshold ) }`);
-            io.log.write('message', 'io:sensor', `drift = ${ map( drift ) }`);
+            io.log.write('message', 'io:sensor', `drift over ${ samples } samples = ${ map( drift ) }`);
+            io.log.write('message', 'io:sensor', `pressure over ${ samples } samples = ${ sensorValue }`);
 
             /**
              * In this case, the drift is less than the specified threshold,
              * so we don't change state, but we add the net drift to the proper
              * endpoint value in an effort to compensate.
              */
-            if ( Math.abs( drift ) < threshold ) {
+            if ( Math.abs( drift ) < drift_threshold ) {
 
                 //io.log.write('message', 'io:sensor', `Drift below threshold, updating endpoint by ${ drift }.`);
 
-                adjust_interval_endpoint( drift, io );
+                if ( sensorValue < io.sample_threshold && io.state === 1 ) {
+                    /**
+                     * In this case, our absolute sampled value from the sensor is less than the specific threshold value
+                     * we set.
+                     *
+                     * NOTE: we only have a coasting down problem with these sensors, NOT a coasting up problem, so we're
+                     * only concerned with the case where the sensorValue is below the threshold, and the state is given as high.
+                     */
 
-            } else if ( Math.abs( drift ) >= threshold ) {
+                    io.state = 0;
+                    io.server.send( 0 );
+
+                } else {
+
+                    adjust_interval_endpoint( drift, io );
+
+                }
+
+            } else if ( Math.abs( drift ) >= drift_threshold ) {
                 /**
                  * In this case, we're above the threshold, so we need to trigger a state transition.
                  * We're also going to do some sanity checking –
