@@ -2,11 +2,9 @@
 
 const linearmap = require('./linear-map.js');
 
-const a = 0.85;
+const lambda = 4;
 
-const f = function( k, n ) {
-    return Math.PI * a * ( k + 1 ) / n;
-};
+const omega = (2 * Math.PI) / lambda;
 
 module.exports = function( self ) {
 
@@ -37,8 +35,6 @@ module.exports = function( self ) {
 
         } else {
 
-            let omega = f( k+s, n );
-
             if ( k_n < 1/6 ) {
 
                 let A_b = 0.5;
@@ -53,66 +49,61 @@ module.exports = function( self ) {
 
             } else if ( k_n < 1/3 ) {
 
-                let A_b = 0.7;
-                let A_y = 0.1;
+                let A_y = 0.25;
 
                 return {
 
                     r: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
                     g: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
-                    b: parseInt( Math.floor( passive_map( A_b * Math.sin( omega * t ) + A_b ) ) )
+                    b: 0
 
                 };
 
             } else if ( k_n < 1/2 ) {
 
-                let A_b = 0.4;
-                let A_y = 0.5;
+                let A_b = 0.75;
 
                 return {
 
-                    r: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
-                    g: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
+                    r: 0,
+                    g: 0,
                     b: parseInt( Math.floor( passive_map( A_b * Math.sin( omega * t ) + A_b ) ) )
 
                 };
 
             } else if ( k_n < 2/3 ) {
 
-                let A_b = 0.3;
-                let A_y = 0.7;
+                let A_y = 0.375;
 
                 return {
 
                     r: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
                     g: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
-                    b: parseInt( Math.floor( passive_map( A_b * Math.sin( omega * t ) + A_b ) ) )
+                    b: 0
 
                 };
 
             } else if ( k_n < 5/6 ) {
 
-                let A_b = 0.2;
-                let A_y = 0.9;
+                let A_b = 1;
 
                 return {
 
-                    r: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
-                    g: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
+                    r: 0,
+                    g: 0,
                     b: parseInt( Math.floor( passive_map( A_b * Math.sin( omega * t ) + A_b ) ) )
 
                 };
 
             } else if ( k_n < 1 ) {
 
-                let A_b = 0.5;
-                let A_y = 0.9;
+                let A_y = 0.5;
 
                 return {
 
                     r: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
                     g: parseInt( Math.floor( passive_map( A_y * Math.sin( omega * t ) + A_y ) ) ),
-                    b: parseInt( Math.floor( passive_map( A_b * Math.sin( omega * t ) + A_b ) ) )
+                    b: 0
 
                 };
 
